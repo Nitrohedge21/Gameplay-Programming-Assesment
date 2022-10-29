@@ -11,16 +11,16 @@ public class PlayerController : MonoBehaviour
     RaycastHit2D raycastHit;
     private float minSpeed = 10f;
     bool facingRight = true;
+    public bool playerSwitch = true;
 
     [Header("Required Stuff")]
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float jumpHeight = 10f;
     [SerializeField] private float maxSpeed = 15f;
     [SerializeField] private LayerMask jumpableGround;
-    int CloserGround;
-    int FurtherGround;
     int jumpForce = 10;
-
+    GameObject player1;
+    GameObject player2;
 
 
     void Start()
@@ -31,41 +31,70 @@ public class PlayerController : MonoBehaviour
 
         //IgnoreLayerCollision uses the index numbers on the project.
         Physics2D.IgnoreLayerCollision(0, 7, true);
-
+        player1 = GameObject.FindGameObjectWithTag("Player");
+        player2 = GameObject.FindGameObjectWithTag("Player 2");
 
     }
 
     void Update()
     {
+        CharacterSwitch();
         //Changed GetAxisRaws into GetAxis to get a smoother movement and slowdown.
         directionX = Input.GetAxis("Horizontal");
 
-        rigidbody2d.velocity = new Vector2(directionX * moveSpeed, rigidbody2d.velocity.y);
-        //The player gains speed over time instead of input, gonna try to figure out how to fix this.
-        if (Input.GetAxis("Horizontal") != 0)
+        if (this.tag == "Player" ? playerSwitch : !playerSwitch)
         {
-            //Added != 0 here so that i could use bool in an if statement. Thanks to logicandchaos from Unity answers.
-            moveSpeed += 0.001f;
-        }
-        else
-        {
-            moveSpeed -= 0.01f;
-        }
+            rigidbody2d.velocity = new Vector2(directionX * moveSpeed, rigidbody2d.velocity.y);
 
-        if (moveSpeed < minSpeed)
-        {
-            moveSpeed = minSpeed;
-        }
-        if (moveSpeed > maxSpeed)
-        {
-            moveSpeed = maxSpeed;
-        }
+            //The player gains speed over time instead of input, gonna try to figure out how to fix this.
+            //Honestly don't remember what I was going for when I made the comment above but I assume this is a leftover from my sonic project.
 
+            if (Input.GetAxis("Horizontal") != 0)
+            {
+                //Added != 0 here so that i could use bool in an if statement. Thanks to logicandchaos from Unity answers.
+                moveSpeed += 0.001f;
+            }
+            else
+            {
+                moveSpeed -= 0.01f;
+            }
 
-        // Putting isGrounded after the input makes the ray not show up for some reason.
-        if (/*isGrounded() && */Input.GetButtonDown("Jump"))
+            if (moveSpeed < minSpeed)
+            {
+                moveSpeed = minSpeed;
+            }
+            if (moveSpeed > maxSpeed)
+            {
+                moveSpeed = maxSpeed;
+            }
+
+            // Putting isGrounded after the input makes the ray not show up for some reason.
+            // I don't know what I meant by this because I can see it fine - 29.10.2022
+            if (isGrounded() && Input.GetButtonDown("Jump"))
+            {
+                rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, jumpHeight);
+            }
+        }
+        
+    }
+
+    void CharacterSwitch()
+    {
+        
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, jumpHeight);
+            playerSwitch = !playerSwitch;
+
+            if(this.gameObject == player1)
+            {
+                sprite.sortingOrder = 1;
+                //While this does change the sorting order, it does not revert them back yet because I haven't been able to figure it out.
+            }
+            else if (this.gameObject == player2)
+            {
+                //Revert the thing above
+                sprite.sortingOrder = 2;
+            }
         }
     }
 
@@ -111,17 +140,31 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-       //After the player collides with the launching spring, make it change the layermask(jumpableGround).
+        // Gotta ask Neil or someone from the class about the raycast because the player is still able to trigger the raycast collision even if they can not interact with the objects.
 
+        //Instead of using the layer's name, use the the int value of it to make the code work.
 
-       if(other.gameObject.tag == "Spring")
+        if (other.gameObject.tag == "Spring" && other.gameObject.layer == 6)
         {
-            
+            //If the player hits the spring on the foreground(closerground in the editor), the collisionable layer swaps to background(furtherground in the editor)
             Physics2D.IgnoreLayerCollision(0, 6, true);
             Physics2D.IgnoreLayerCollision(0, 7, false);
             rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 25);
             
+        }
+        else if (other.gameObject.tag == "Spring" && other.gameObject.layer == 7)
+        {
+            Physics2D.IgnoreLayerCollision(0, 7, true);
+            Physics2D.IgnoreLayerCollision(0, 6, false);
+            rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+        }
+
+        //Makes it so that the characters don't collide with eachother.
+        if(this.gameObject == player1 && other.gameObject  == player2)
+        {
+            Physics2D.IgnoreCollision(other.gameObject.GetComponent<Collider2D>(), this.gameObject.GetComponent<Collider2D>());
         }
     }
 
