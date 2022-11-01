@@ -30,7 +30,9 @@ public class PlayerController : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
 
         //IgnoreLayerCollision uses the index numbers on the project.
-        Physics2D.IgnoreLayerCollision(0, 7, true);
+        
+        
+        Physics2D.IgnoreLayerCollision(8, 9, true);
         player1 = GameObject.FindGameObjectWithTag("Player");
         player2 = GameObject.FindGameObjectWithTag("Player 2");
 
@@ -84,16 +86,20 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             playerSwitch = !playerSwitch;
-
-            if(this.gameObject == player1)
+            //Fixed the sprite order issue by changing the if statements' parantheses.
+            if(playerSwitch)
             {
-                sprite.sortingOrder = 1;
+
+                player1.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                player2.GetComponent<SpriteRenderer>().sortingOrder = 1;
+                
                 //While this does change the sorting order, it does not revert them back yet because I haven't been able to figure it out.
             }
-            else if (this.gameObject == player2)
+            else if (!playerSwitch)
             {
-                //Revert the thing above
-                sprite.sortingOrder = 2;
+                //Reverts the thing above
+                player1.GetComponent<SpriteRenderer>().sortingOrder = 1;
+                player2.GetComponent<SpriteRenderer>().sortingOrder = 2;
             }
         }
     }
@@ -146,26 +152,50 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag == "Spring" && other.gameObject.layer == 6)
         {
+            if(this.gameObject == player1)
+            {
+                Physics2D.IgnoreLayerCollision(8, 6, true);
+                Physics2D.IgnoreLayerCollision(8, 7, false);
+                rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+            }
             //If the player hits the spring on the foreground(closerground in the editor), the collisionable layer swaps to background(furtherground in the editor)
-            Physics2D.IgnoreLayerCollision(0, 6, true);
-            Physics2D.IgnoreLayerCollision(0, 7, false);
-            rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+            else if (this.gameObject == player2)
+            {
+                Physics2D.IgnoreLayerCollision(9, 6, true);
+                Physics2D.IgnoreLayerCollision(9, 7, false);
+                rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+            }
             
         }
         else if (other.gameObject.tag == "Spring" && other.gameObject.layer == 7)
         {
-            Physics2D.IgnoreLayerCollision(0, 7, true);
-            Physics2D.IgnoreLayerCollision(0, 6, false);
-            rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+            if(this.gameObject == player1)
+            {
+                Physics2D.IgnoreLayerCollision(8, 7, true);
+                Physics2D.IgnoreLayerCollision(8, 6, false);
+                rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+            }
+            else if (this.gameObject == player2)
+            {
+                Physics2D.IgnoreLayerCollision(9, 7, true);
+                Physics2D.IgnoreLayerCollision(9, 6, false);
+                rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+            }
+            
         }
 
-        //Makes it so that the characters don't collide with eachother.
-        if(this.gameObject == player1 && other.gameObject  == player2)
-        {
-            Physics2D.IgnoreCollision(other.gameObject.GetComponent<Collider2D>(), this.gameObject.GetComponent<Collider2D>());
-        }
+        
     }
 
 }
+
+
+//Changed this line with IgnoreCollision on start after using seperate layers for both player game objects.
+//if(this.gameObject == player1 && other.gameObject  == player2)
+//{
+//    Physics2D.IgnoreCollision(other.gameObject.GetComponent<Collider2D>(), this.gameObject.GetComponent<Collider2D>());
+//}

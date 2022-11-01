@@ -6,17 +6,6 @@ public class Spring : MonoBehaviour
 {
     public float jumpForce = 20;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     private void OnCollisionEnter2D(Collision2D other)
     {
         //I don't know why the spring works despite not including the new "Player 2" tag but I'll keep it as it is for the time being.
@@ -26,12 +15,12 @@ public class Spring : MonoBehaviour
         }
     }
 
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        if (other.gameObject.tag == "Player")
-        {
+    //private void OnCollisionExit2D(Collision2D other)
+    //{
+    //    if (other.gameObject.tag == "Player")
+    //    {
             
-        }
-    }
+    //    }
+    //}
 
 }
