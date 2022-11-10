@@ -164,6 +164,7 @@ public class PlayerController : MonoBehaviour
 
             if (Vector2.Distance(player2.transform.position, followSonic.position) > stoppingDistance)
             {
+                
                 player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, moveSpeed / 1.5f * Time.deltaTime);
             }
         }
