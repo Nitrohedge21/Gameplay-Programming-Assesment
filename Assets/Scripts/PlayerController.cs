@@ -12,9 +12,10 @@ public class PlayerController : MonoBehaviour
     private float minSpeed = 10f;
     bool facingRight = true;
     public bool playerSwitch = true;
-    public bool isTails = false;
+    private bool isTails = false;
     public Transform followSonic;
     public Transform followTails;
+    private float stoppingDistance;
 
     [Header("Required Stuff")]
     [SerializeField] private float moveSpeed = 10f;
@@ -39,13 +40,17 @@ public class PlayerController : MonoBehaviour
         player2 = GameObject.FindGameObjectWithTag("Player 2");
         followSonic = player1.transform;
         followTails = player2.transform;
+        stoppingDistance = 1.75f;
         
     }
 
+    private void FixedUpdate()
+    {
+        AIFollow();
+    }
     void Update()
     {
         CharacterSwitch();
-        AIFollow();
         //Changed GetAxisRaws into GetAxis to get a smoother movement and slowdown.
         directionX = Input.GetAxis("Horizontal");
 
@@ -157,15 +162,20 @@ public class PlayerController : MonoBehaviour
         {
             //While sonic is being controlled
 
-            player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, moveSpeed * Time.deltaTime);
-
+            if (Vector2.Distance(player2.transform.position, followSonic.position) > stoppingDistance)
+            {
+                player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, moveSpeed / 1.5f * Time.deltaTime);
+            }
         }
         
         if (!playerSwitch)
         {
             //While Tails is being controlled
 
-            player1.transform.position = Vector2.MoveTowards(player1.transform.position, followTails.position, moveSpeed * Time.deltaTime);
+            if (Vector2.Distance(player1.transform.position, followTails.position) > stoppingDistance)
+            {
+                player1.transform.position = Vector2.MoveTowards(player1.transform.position, followTails.position, moveSpeed / 1.5f * Time.deltaTime);
+            }
         }
 
 
@@ -182,3 +192,15 @@ public class PlayerController : MonoBehaviour
 //{
 //    Physics2D.IgnoreCollision(other.gameObject.GetComponent<Collider2D>(), this.gameObject.GetComponent<Collider2D>());
 //}
+
+// Unused following ai from morebblakeyyy on yt
+
+/*float distance = Vector2.Distance(player2.transform.position, followSonic.position);
+Vector2 direction = followSonic.position - player2.transform.position;
+direction.Normalize();
+
+if (distance < 3)
+{
+    player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, moveSpeed / 2 * Time.deltaTime);
+
+}*/
