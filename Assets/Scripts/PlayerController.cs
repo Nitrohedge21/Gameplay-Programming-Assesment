@@ -12,13 +12,15 @@ public class PlayerController : MonoBehaviour
     private float minSpeed = 10f;
     bool facingRight = true;
     public bool playerSwitch = true;
+    public bool isTails = false;
+    public Transform followSonic;
+    public Transform followTails;
 
     [Header("Required Stuff")]
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float jumpHeight = 10f;
     [SerializeField] private float maxSpeed = 15f;
     [SerializeField] private LayerMask jumpableGround;
-    int jumpForce = 10;
     GameObject player1;
     GameObject player2;
 
@@ -35,12 +37,15 @@ public class PlayerController : MonoBehaviour
         Physics2D.IgnoreLayerCollision(8, 9, true);
         player1 = GameObject.FindGameObjectWithTag("Player");
         player2 = GameObject.FindGameObjectWithTag("Player 2");
-
+        followSonic = player1.transform;
+        followTails = player2.transform;
+        
     }
 
     void Update()
     {
         CharacterSwitch();
+        AIFollow();
         //Changed GetAxisRaws into GetAxis to get a smoother movement and slowdown.
         directionX = Input.GetAxis("Horizontal");
 
@@ -144,51 +149,29 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(0, 180, 0);
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
+    void AIFollow()
     {
-        // Gotta ask Neil or someone from the class about the raycast because the player is still able to trigger the raycast collision even if they can not interact with the objects.
+        //Fixed the issue with crashing but the following one is literally teleporting every frame.
 
-        //Instead of using the layer's name, use the the int value of it to make the code work.
-
-        if (other.gameObject.tag == "Spring" && other.gameObject.layer == 6)
+        if (playerSwitch)
         {
-            if(this.gameObject == player1)
-            {
-                Physics2D.IgnoreLayerCollision(8, 6, true);
-                Physics2D.IgnoreLayerCollision(8, 7, false);
-                rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 25);
-            }
-            //If the player hits the spring on the foreground(closerground in the editor), the collisionable layer swaps to background(furtherground in the editor)
-            else if (this.gameObject == player2)
-            {
-                Physics2D.IgnoreLayerCollision(9, 6, true);
-                Physics2D.IgnoreLayerCollision(9, 7, false);
-                rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 25);
-            }
-            
-        }
-        else if (other.gameObject.tag == "Spring" && other.gameObject.layer == 7)
-        {
-            if(this.gameObject == player1)
-            {
-                Physics2D.IgnoreLayerCollision(8, 7, true);
-                Physics2D.IgnoreLayerCollision(8, 6, false);
-                rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-            }
-            else if (this.gameObject == player2)
-            {
-                Physics2D.IgnoreLayerCollision(9, 7, true);
-                Physics2D.IgnoreLayerCollision(9, 6, false);
-                rigidbody2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                rigidbody2d.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-            }
-            
-        }
+            //While sonic is being controlled
 
+            player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, moveSpeed * Time.deltaTime);
+
+        }
         
+        if (!playerSwitch)
+        {
+            //While Tails is being controlled
+
+            player1.transform.position = Vector2.MoveTowards(player1.transform.position, followTails.position, moveSpeed * Time.deltaTime);
+        }
+
+
+        //While one of them is being controlled, the other one follows the other one on all axes.
+        //Make it so that it does not instantly teleport into the z axis when collided with a spring. (Check Sonic Mania to see how they did it)
+        //Make it so that the following one "respawns" (could probably just teleport it to the sky and change the z axis to give it the respawn feeling??) when it gets too far away from the other.
     }
 
 }
