@@ -9,18 +9,20 @@ public class PlayerController : MonoBehaviour
     float directionX;
     private SpriteRenderer sprite;
     RaycastHit2D raycastHit;
-    private float minSpeed = 10f;
+    
     bool facingRight = true;
-    public bool playerSwitch = true;
-    private bool isTails = false;
-    public Transform followSonic;
-    public Transform followTails;
+    public bool isTails = true;     //Had to make this public in order to access it on camera's code but I might make a get/set to do that and set this bool back to private.
+    private Transform followSonic;
+    private Transform followTails;
     private float stoppingDistance;
-
     [Header("Required Stuff")]
-    [SerializeField] private float moveSpeed = 10f;
+    [SerializeField] private float sonicSpeed = 10f;
+    [SerializeField] private float tailsSpeed = 7f;
     [SerializeField] private float jumpHeight = 10f;
-    [SerializeField] private float maxSpeed = 15f;
+    private float maxSpeedSonic = 15f;
+    private float maxSpeedTails = 12f;
+    private float minSpeedSonic = 10f;
+    private float minSpeedTails = 7f;
     [SerializeField] private LayerMask jumpableGround;
     GameObject player1;
     GameObject player2;
@@ -54,9 +56,9 @@ public class PlayerController : MonoBehaviour
         //Changed GetAxisRaws into GetAxis to get a smoother movement and slowdown.
         directionX = Input.GetAxis("Horizontal");
 
-        if (this.tag == "Player" ? playerSwitch : !playerSwitch)
+        if (this.tag == "Player" ? isTails : !isTails)
         {
-            rigidbody2d.velocity = new Vector2(directionX * moveSpeed, rigidbody2d.velocity.y);
+            rigidbody2d.velocity = new Vector2(directionX * sonicSpeed, rigidbody2d.velocity.y);
 
             //The player gains speed over time instead of input, gonna try to figure out how to fix this.
             //Honestly don't remember what I was going for when I made the comment above but I assume this is a leftover from my sonic project.
@@ -64,20 +66,44 @@ public class PlayerController : MonoBehaviour
             if (Input.GetAxis("Horizontal") != 0)
             {
                 //Added != 0 here so that i could use bool in an if statement. Thanks to logicandchaos from Unity answers.
-                moveSpeed += 0.001f;
+                if (this.tag == "Player")
+                {
+                    sonicSpeed += 0.001f;
+                }
+                else if (this.tag == "Player 2")
+                {
+                    tailsSpeed += 0.001f;
+                }
+                
             }
             else
             {
-                moveSpeed -= 0.01f;
+                if (this.tag == "Player")
+                {
+                    sonicSpeed -= 0.01f;
+                }
+                else if (this.tag == "Player 2")
+                {
+                    tailsSpeed -= 0.01f;
+                }
             }
 
-            if (moveSpeed < minSpeed)
+            if (sonicSpeed < minSpeedSonic)
             {
-                moveSpeed = minSpeed;
+                sonicSpeed = minSpeedSonic;
             }
-            if (moveSpeed > maxSpeed)
+            if (sonicSpeed > maxSpeedSonic)
             {
-                moveSpeed = maxSpeed;
+                sonicSpeed = maxSpeedSonic;
+            }
+
+            if (tailsSpeed < minSpeedTails)
+            {
+                tailsSpeed = minSpeedTails;
+            }
+            if (tailsSpeed > maxSpeedTails)
+            {
+                tailsSpeed = maxSpeedTails;
             }
 
             // Putting isGrounded after the input makes the ray not show up for some reason.
@@ -95,9 +121,9 @@ public class PlayerController : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            playerSwitch = !playerSwitch;
+            isTails = !isTails;
             //Fixed the sprite order issue by changing the if statements' parantheses.
-            if(playerSwitch)
+            if(isTails)
             {
 
                 player1.GetComponent<SpriteRenderer>().sortingOrder = 2;
@@ -105,7 +131,7 @@ public class PlayerController : MonoBehaviour
                 
                 //While this does change the sorting order, it does not revert them back yet because I haven't been able to figure it out.
             }
-            else if (!playerSwitch)
+            else if (!isTails)
             {
                 //Reverts the thing above
                 player1.GetComponent<SpriteRenderer>().sortingOrder = 1;
@@ -147,35 +173,34 @@ public class PlayerController : MonoBehaviour
 
     }
 
-
     void flip()
     {
         facingRight = !facingRight;
         transform.Rotate(0, 180, 0);
     }
-
+    
     void AIFollow()
     {
         //Fixed the issue with crashing but the following one is literally teleporting every frame.
 
-        if (playerSwitch)
+        if (isTails)
         {
             //While sonic is being controlled
 
             if (Vector2.Distance(player2.transform.position, followSonic.position) > stoppingDistance)
             {
                 
-                player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, moveSpeed / 1.5f * Time.deltaTime);
+                player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, tailsSpeed / 1.5f * Time.deltaTime);
             }
         }
         
-        if (!playerSwitch)
+        if (!isTails)
         {
             //While Tails is being controlled
 
             if (Vector2.Distance(player1.transform.position, followTails.position) > stoppingDistance)
             {
-                player1.transform.position = Vector2.MoveTowards(player1.transform.position, followTails.position, moveSpeed / 1.5f * Time.deltaTime);
+                player1.transform.position = Vector2.MoveTowards(player1.transform.position, followTails.position, sonicSpeed / 1.5f * Time.deltaTime);
             }
         }
 
