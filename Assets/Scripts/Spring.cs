@@ -31,6 +31,7 @@ public class Spring : MonoBehaviour
                 Physics2D.IgnoreLayerCollision(8, 7, false);
                 other.gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 other.gameObject.GetComponent<Rigidbody2D>().transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                player1.GetComponent<PlayerController>().jumpableGround = 1 << 7;
             }
             //If the player hits the spring on the foreground(closerground in the editor), the collisionable layer swaps to background(furtherground in the editor)
             else if (other.gameObject == player2)
@@ -39,6 +40,7 @@ public class Spring : MonoBehaviour
                 Physics2D.IgnoreLayerCollision(9, 7, false);
                 other.gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 other.gameObject.GetComponent<Rigidbody2D>().transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                player2.GetComponent<PlayerController>().jumpableGround = 1 << 7;
             }
 
         }
@@ -50,6 +52,7 @@ public class Spring : MonoBehaviour
                 Physics2D.IgnoreLayerCollision(8, 6, false);
                 other.gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 other.gameObject.GetComponent<Rigidbody2D>().transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+                player1.GetComponent<PlayerController>().jumpableGround = 1 << 6;
             }
             else if (other.gameObject == player2)
             {
@@ -58,6 +61,7 @@ public class Spring : MonoBehaviour
                 Physics2D.IgnoreLayerCollision(9, 6, false);
                 other.gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 other.gameObject.GetComponent<Rigidbody2D>().transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+                player1.GetComponent<PlayerController>().jumpableGround = 1 << 6;
             }
 
         }

@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     private float maxSpeedTails = 12f;
     private float minSpeedSonic = 10f;
     private float minSpeedTails = 7f;
-    [SerializeField] private LayerMask jumpableGround;
+    [SerializeField] public LayerMask jumpableGround;
     GameObject player1;
     GameObject player2;
 
@@ -43,7 +43,9 @@ public class PlayerController : MonoBehaviour
         followSonic = player1.transform;
         followTails = player2.transform;
         stoppingDistance = 1.75f;
-        
+        player1.GetComponent<PlayerController>().jumpableGround = 1 << 6;
+        player2.GetComponent<PlayerController>().jumpableGround = 1 << 6;
+        //This shit uses a really weird system for the int values, check drive for the cheat sheet.
     }
 
     private void FixedUpdate()

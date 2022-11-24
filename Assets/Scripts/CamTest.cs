@@ -22,12 +22,10 @@ public class CamTest : MonoBehaviour
         if (!playerController.isSonic)
         {
             playerFollow = Tails.transform;
-            Debug.Log("Test");
         }
         else if (playerController.isSonic)
         {
             playerFollow = Sonic.transform;
-            Debug.Log("Test2");
         }
         transform.position = new Vector3(playerFollow.position.x, playerFollow.position.y, transform.position.z);
     }
