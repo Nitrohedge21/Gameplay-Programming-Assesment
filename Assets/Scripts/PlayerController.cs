@@ -9,9 +9,9 @@ public class PlayerController : MonoBehaviour
     float directionX;
     private SpriteRenderer sprite;
     RaycastHit2D raycastHit;
-    
+    //Changed isTails into isSonic because of the mess I had in the code but it might be changed later on.
     bool facingRight = true;
-    public bool isTails = true;     //Had to make this public in order to access it on camera's code but I might make a get/set to do that and set this bool back to private.
+    public bool isSonic = true;     //Had to make this public in order to access it on camera's code but I might make a get/set to do that and set this bool back to private.
     private Transform followSonic;
     private Transform followTails;
     private float stoppingDistance;
@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour
         //Changed GetAxisRaws into GetAxis to get a smoother movement and slowdown.
         directionX = Input.GetAxis("Horizontal");
 
-        if (this.tag == "Player" ? isTails : !isTails)
+        if (this.tag == "Player" ? isSonic : !isSonic)
         {
             rigidbody2d.velocity = new Vector2(directionX * sonicSpeed, rigidbody2d.velocity.y);
 
@@ -121,9 +121,9 @@ public class PlayerController : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            isTails = !isTails;
+            isSonic = !isSonic;
             //Fixed the sprite order issue by changing the if statements' parantheses.
-            if(isTails)
+            if(isSonic)
             {
 
                 player1.GetComponent<SpriteRenderer>().sortingOrder = 2;
@@ -131,7 +131,7 @@ public class PlayerController : MonoBehaviour
                 
                 //While this does change the sorting order, it does not revert them back yet because I haven't been able to figure it out.
             }
-            else if (!isTails)
+            else if (!isSonic)
             {
                 //Reverts the thing above
                 player1.GetComponent<SpriteRenderer>().sortingOrder = 1;
@@ -183,7 +183,7 @@ public class PlayerController : MonoBehaviour
     {
         //Fixed the issue with crashing but the following one is literally teleporting every frame.
 
-        if (isTails)
+        if (isSonic)
         {
             //While sonic is being controlled
 
@@ -194,7 +194,7 @@ public class PlayerController : MonoBehaviour
             }
         }
         
-        if (!isTails)
+        if (!isSonic)
         {
             //While Tails is being controlled
 
