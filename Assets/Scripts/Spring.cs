@@ -22,7 +22,7 @@ public class Spring : MonoBehaviour
         {
             other.gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
-
+        //The part below is for the closer ground/foreground platforms
         if (this.gameObject.layer == 6 && ((other.gameObject.tag == "Player" && other.gameObject.layer == 8) || (other.gameObject.tag == "Player 2" && other.gameObject.layer == 9)))
         {
             if (other.gameObject == player1)
@@ -44,6 +44,7 @@ public class Spring : MonoBehaviour
             }
 
         }
+        //This part is for futher ground/background platforms
         else if (this.gameObject.layer == 7 && ((other.gameObject.tag == "Player" && other.gameObject.layer == 8) || (other.gameObject.tag == "Player 2" && other.gameObject.layer == 9)))
         {
             if (other.gameObject == player1)

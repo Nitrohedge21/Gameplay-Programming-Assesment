@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public LayerMask jumpableGround;
     GameObject player1;
     GameObject player2;
+    private float delayTime;
 
 
     void Start()
@@ -35,8 +36,8 @@ public class PlayerController : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
 
         //IgnoreLayerCollision uses the index numbers on the project.
-        
-        
+
+
         Physics2D.IgnoreLayerCollision(8, 9, true);
         player1 = GameObject.FindGameObjectWithTag("Player");
         player2 = GameObject.FindGameObjectWithTag("Player 2");
@@ -51,6 +52,12 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         AIFollow();
+
+        //if (player1.GetComponent<PlayerController>().isGrounded() || player2.GetComponent<PlayerController>().isGrounded())
+        //{
+        //    DelayedFollow();
+        //}
+
     }
     void Update()
     {
@@ -76,7 +83,7 @@ public class PlayerController : MonoBehaviour
                 {
                     tailsSpeed += 0.001f;
                 }
-                
+
             }
             else
             {
@@ -115,22 +122,22 @@ public class PlayerController : MonoBehaviour
                 rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, jumpHeight);
             }
         }
-        
+
     }
 
     void CharacterSwitch()
     {
-        
+
         if (Input.GetKeyDown(KeyCode.Q))
         {
             isSonic = !isSonic;
             //Fixed the sprite order issue by changing the if statements' parantheses.
-            if(isSonic)
+            if (isSonic)
             {
 
                 player1.GetComponent<SpriteRenderer>().sortingOrder = 2;
                 player2.GetComponent<SpriteRenderer>().sortingOrder = 1;
-                
+
                 //While this does change the sorting order, it does not revert them back yet because I haven't been able to figure it out.
             }
             else if (!isSonic)
@@ -180,7 +187,7 @@ public class PlayerController : MonoBehaviour
         facingRight = !facingRight;
         transform.Rotate(0, 180, 0);
     }
-    
+
     void AIFollow()
     {
         //Fixed the issue with crashing but the following one is literally teleporting every frame.
@@ -189,29 +196,33 @@ public class PlayerController : MonoBehaviour
         {
             //While sonic is being controlled
 
-            if (Vector2.Distance(player2.transform.position, followSonic.position) > stoppingDistance)
+            if (Vector2.Distance(player2.transform.position, followSonic.position) > stoppingDistance /*&& player1.GetComponent<PlayerController>().isGrounded()*/)
             {
-                
                 player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, tailsSpeed / 1.5f * Time.deltaTime);
             }
         }
-        
+
         if (!isSonic)
         {
             //While Tails is being controlled
 
-            if (Vector2.Distance(player1.transform.position, followTails.position) > stoppingDistance)
+            if (Vector2.Distance(player1.transform.position, followTails.position) > stoppingDistance /*&& player1.GetComponent<PlayerController>().isGrounded()*/)
             {
                 player1.transform.position = Vector2.MoveTowards(player1.transform.position, followTails.position, sonicSpeed / 1.5f * Time.deltaTime);
             }
+
+
+            //While one of them is being controlled, the other one follows the other one on all axes.
+            //Make it so that it does not instantly teleport into the z axis when collided with a spring. (Check Sonic Mania to see how they did it)
+            //Make it so that the following one "respawns" (could probably just teleport it to the sky and change the z axis to give it the respawn feeling??) when it gets too far away from the other.
         }
 
-
-        //While one of them is being controlled, the other one follows the other one on all axes.
-        //Make it so that it does not instantly teleport into the z axis when collided with a spring. (Check Sonic Mania to see how they did it)
-        //Make it so that the following one "respawns" (could probably just teleport it to the sky and change the z axis to give it the respawn feeling??) when it gets too far away from the other.
     }
 
+    void DelayedFollow()
+    {
+        Invoke(nameof(AIFollow), 0.5f);
+    }
 }
 
 
@@ -232,3 +243,17 @@ if (distance < 3)
     player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, moveSpeed / 2 * Time.deltaTime);
 
 }*/
+
+//Tested following method
+//this just teleported them rather than actually making them follow smoothly unlike the vector2 method
+/*
+ player1.transform.position = new Vector3(followTails.position.x, followTails.position.y, player1.transform.position.z);
+ player2.transform.position = new Vector3(followSonic.position.x, followSonic.position.y, player2.transform.position.z);
+*/
+
+//another tested following method
+//This pretty much did the same thing as the one above
+/*
+  player2.transform.position = Vector3.Lerp(player2.transform.position, followSonic.position, Time.time);
+  player1.transform.position = Vector3.Lerp(player1.transform.position, followTails.position, Time.time);
+ */
