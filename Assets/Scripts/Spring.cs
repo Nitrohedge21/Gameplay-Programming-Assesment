@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Spring : MonoBehaviour
@@ -27,19 +25,20 @@ public class Spring : MonoBehaviour
         {
             if (other.gameObject == player1)
             {
-                Physics2D.IgnoreLayerCollision(8, 6, true);
-                Physics2D.IgnoreLayerCollision(8, 7, false);
+                //Launch the player and then do the thing.
                 other.gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 other.gameObject.GetComponent<Rigidbody2D>().transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                Physics2D.IgnoreLayerCollision(8, 6, true);
+                Physics2D.IgnoreLayerCollision(8, 7, false);
                 player1.GetComponent<PlayerController>().jumpableGround = 1 << 7;
             }
             //If the player hits the spring on the foreground(closerground in the editor), the collisionable layer swaps to background(furtherground in the editor)
             else if (other.gameObject == player2)
             {
-                Physics2D.IgnoreLayerCollision(9, 6, true);
-                Physics2D.IgnoreLayerCollision(9, 7, false);
                 other.gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 other.gameObject.GetComponent<Rigidbody2D>().transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                Physics2D.IgnoreLayerCollision(9, 6, true);
+                Physics2D.IgnoreLayerCollision(9, 7, false);
                 player2.GetComponent<PlayerController>().jumpableGround = 1 << 7;
             }
 

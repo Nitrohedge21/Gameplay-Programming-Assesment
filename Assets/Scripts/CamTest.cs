@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 public class CamTest : MonoBehaviour
 {
@@ -8,10 +6,6 @@ public class CamTest : MonoBehaviour
     [SerializeField] private Transform Tails;
     private Transform playerFollow;
 
-    float xPosSonic;
-    float yPosSonic; 
-    float xPosTails;
-    float yPosTails;
 
     void Start()
     {

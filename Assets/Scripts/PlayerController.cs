@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -28,19 +26,18 @@ public class PlayerController : MonoBehaviour
     GameObject player2;
     private float delayTime;
 
-
     void Start()
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
         capsuleCollider2d = GetComponent<CapsuleCollider2D>();
         sprite = GetComponent<SpriteRenderer>();
-
         //IgnoreLayerCollision uses the index numbers on the project.
 
 
         Physics2D.IgnoreLayerCollision(8, 9, true);
         player1 = GameObject.FindGameObjectWithTag("Player");
         player2 = GameObject.FindGameObjectWithTag("Player 2");
+
         followSonic = player1.transform;
         followTails = player2.transform;
         stoppingDistance = 1.75f;
@@ -53,15 +50,11 @@ public class PlayerController : MonoBehaviour
     {
         AIFollow();
 
-        //if (player1.GetComponent<PlayerController>().isGrounded() || player2.GetComponent<PlayerController>().isGrounded())
-        //{
-        //    DelayedFollow();
-        //}
-
     }
     void Update()
     {
         CharacterSwitch();
+
         //Changed GetAxisRaws into GetAxis to get a smoother movement and slowdown.
         directionX = Input.GetAxis("Horizontal");
 
@@ -87,6 +80,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+
                 if (this.tag == "Player")
                 {
                     sonicSpeed -= 0.01f;
@@ -188,6 +182,7 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(0, 180, 0);
     }
 
+
     void AIFollow()
     {
         //Fixed the issue with crashing but the following one is literally teleporting every frame.
@@ -196,9 +191,9 @@ public class PlayerController : MonoBehaviour
         {
             //While sonic is being controlled
 
-            if (Vector2.Distance(player2.transform.position, followSonic.position) > stoppingDistance /*&& player1.GetComponent<PlayerController>().isGrounded()*/)
+            if (Vector2.Distance(player2.transform.position, followSonic.position) > stoppingDistance)
             {
-                player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, tailsSpeed / 1.5f * Time.deltaTime);
+                player2.transform.position = Vector3.Lerp(player2.transform.position, followSonic.position, tailsSpeed / 1.5f * Time.deltaTime);
             }
         }
 
@@ -206,9 +201,9 @@ public class PlayerController : MonoBehaviour
         {
             //While Tails is being controlled
 
-            if (Vector2.Distance(player1.transform.position, followTails.position) > stoppingDistance /*&& player1.GetComponent<PlayerController>().isGrounded()*/)
+            if (Vector2.Distance(player1.transform.position, followTails.position) > stoppingDistance)
             {
-                player1.transform.position = Vector2.MoveTowards(player1.transform.position, followTails.position, sonicSpeed / 1.5f * Time.deltaTime);
+                player1.transform.position = Vector3.Lerp(player1.transform.position, followTails.position, sonicSpeed / 1.5f * Time.deltaTime);
             }
 
 
@@ -221,12 +216,13 @@ public class PlayerController : MonoBehaviour
 
     void DelayedFollow()
     {
-        Invoke(nameof(AIFollow), 0.5f);
+        Invoke(nameof(AIFollow), 0.0005f);
     }
 }
 
 
 //Changed this line with IgnoreCollision on start after using seperate layers for both player game objects.
+
 //if(this.gameObject == player1 && other.gameObject  == player2)
 //{
 //    Physics2D.IgnoreCollision(other.gameObject.GetComponent<Collider2D>(), this.gameObject.GetComponent<Collider2D>());
@@ -237,11 +233,9 @@ public class PlayerController : MonoBehaviour
 /*float distance = Vector2.Distance(player2.transform.position, followSonic.position);
 Vector2 direction = followSonic.position - player2.transform.position;
 direction.Normalize();
-
 if (distance < 3)
 {
     player2.transform.position = Vector2.MoveTowards(player2.transform.position, followSonic.position, moveSpeed / 2 * Time.deltaTime);
-
 }*/
 
 //Tested following method
