@@ -1,5 +1,8 @@
 using UnityEngine;
-
+using System.Collections;
+/// <summary>
+/// 
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rigidbody2d;
@@ -25,7 +28,6 @@ public class PlayerController : MonoBehaviour
     GameObject player1;
     GameObject player2;
     private float delayTime;
-
     void Start()
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
@@ -128,15 +130,13 @@ public class PlayerController : MonoBehaviour
             //Fixed the sprite order issue by changing the if statements' parantheses.
             if (isSonic)
             {
-
+                StartCoroutine(Indicator());
                 player1.GetComponent<SpriteRenderer>().sortingOrder = 2;
                 player2.GetComponent<SpriteRenderer>().sortingOrder = 1;
-
-                //While this does change the sorting order, it does not revert them back yet because I haven't been able to figure it out.
             }
             else if (!isSonic)
             {
-                //Reverts the thing above
+                StartCoroutine(Indicator());
                 player1.GetComponent<SpriteRenderer>().sortingOrder = 1;
                 player2.GetComponent<SpriteRenderer>().sortingOrder = 2;
             }
@@ -183,6 +183,36 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    IEnumerator Indicator()
+    {
+        if(isSonic)
+        {
+            // Activates the indicator and then deactives it after X seconds.
+            player1.transform.GetChild(0).gameObject.SetActive(true);
+            yield return new WaitForSeconds(5);
+            player1.transform.GetChild(0).gameObject.SetActive(false);
+            //Deactivate tails' indicator if it's still active [NOT WORKING ATM]
+            if (player2.transform.GetChild(0).gameObject.activeInHierarchy)
+            {
+                player2.transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
+        else if (!isSonic)
+        {
+            // Activates the indicator and then deactives it after X seconds.
+            player2.transform.GetChild(0).gameObject.SetActive(true);
+            yield return new WaitForSeconds(5);
+            player2.transform.GetChild(0).gameObject.SetActive(false);
+            // Deactivate sonic's indicator if it's still active [NOT WORKING ATM]
+            if (player1.transform.GetChild(0).gameObject.activeInHierarchy)
+            {
+                player1.transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
+        
+
+    }
+
     void AIFollow()
     {
         //Fixed the issue with crashing but the following one is literally teleporting every frame.
@@ -205,10 +235,6 @@ public class PlayerController : MonoBehaviour
             {
                 player1.transform.position = Vector3.Lerp(player1.transform.position, followTails.position, sonicSpeed / 1.5f * Time.deltaTime);
             }
-
-
-            //While one of them is being controlled, the other one follows the other one on all axes.
-            //Make it so that it does not instantly teleport into the z axis when collided with a spring. (Check Sonic Mania to see how they did it)
             //Make it so that the following one "respawns" (could probably just teleport it to the sky and change the z axis to give it the respawn feeling??) when it gets too far away from the other.
         }
 
@@ -218,6 +244,7 @@ public class PlayerController : MonoBehaviour
     {
         Invoke(nameof(AIFollow), 0.0005f);
     }
+
 }
 
 

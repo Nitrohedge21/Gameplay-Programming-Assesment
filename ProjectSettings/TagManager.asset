@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Spring
   - Player 2
+  - Collectables
   layers:
   - Default
   - TransparentFX
