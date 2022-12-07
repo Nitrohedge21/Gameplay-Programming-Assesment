@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     //Changed isTails into isSonic because of the mess I had in the code but it might be changed later on.
     bool facingRight = true;
     public bool isSonic = true;     //Had to make this public in order to access it on camera's code but I might make a get/set to do that and set this bool back to private.
+    bool canSwitch = true;
     private Transform followSonic;
     private Transform followTails;
     private float stoppingDistance;
@@ -128,7 +129,7 @@ public class PlayerController : MonoBehaviour
         {
             isSonic = !isSonic;
             //Fixed the sprite order issue by changing the if statements' parantheses.
-            if (isSonic)
+            if (isSonic && canSwitch)
             {
                 StartCoroutine(Indicator());
                 player1.GetComponent<SpriteRenderer>().sortingOrder = 2;
@@ -189,25 +190,26 @@ public class PlayerController : MonoBehaviour
         {
             // Activates the indicator and then deactives it after X seconds.
             player1.transform.GetChild(0).gameObject.SetActive(true);
-            yield return new WaitForSeconds(5);
-            player1.transform.GetChild(0).gameObject.SetActive(false);
-            //Deactivate tails' indicator if it's still active [NOT WORKING ATM]
-            if (player2.transform.GetChild(0).gameObject.activeInHierarchy)
+            if(player2.transform.GetChild(0).gameObject.activeSelf)
             {
                 player2.transform.GetChild(0).gameObject.SetActive(false);
             }
+            yield return new WaitForSeconds(2);
+            player1.transform.GetChild(0).gameObject.SetActive(false);
+            //Deactivate tails' indicator if it's still active [NOT WORKING ATM]
+            
         }
-        else if (!isSonic)
+        else
         {
             // Activates the indicator and then deactives it after X seconds.
             player2.transform.GetChild(0).gameObject.SetActive(true);
-            yield return new WaitForSeconds(5);
-            player2.transform.GetChild(0).gameObject.SetActive(false);
-            // Deactivate sonic's indicator if it's still active [NOT WORKING ATM]
-            if (player1.transform.GetChild(0).gameObject.activeInHierarchy)
+            if (player1.transform.GetChild(0).gameObject.activeSelf)
             {
                 player1.transform.GetChild(0).gameObject.SetActive(false);
             }
+            yield return new WaitForSeconds(2);
+            player2.transform.GetChild(0).gameObject.SetActive(false);
+            // Deactivate sonic's indicator if it's still active [NOT WORKING ATM]
         }
         
 
@@ -227,7 +229,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (!isSonic)
+        if (!isSonic) 
         {
             //While Tails is being controlled
 
@@ -240,6 +242,14 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    IEnumerator switchTimer()
+    {
+        if(!canSwitch)
+        {
+            yield return new WaitForSecondsRealtime(5);
+            canSwitch = true;
+        }
+    }
     void DelayedFollow()
     {
         Invoke(nameof(AIFollow), 0.0005f);
