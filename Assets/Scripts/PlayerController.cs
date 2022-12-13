@@ -64,7 +64,6 @@ public class PlayerController : MonoBehaviour
         if (this.tag == "Player" ? isSonic : !isSonic)
         {
             rigidbody2d.velocity = new Vector2(directionX * sonicSpeed, rigidbody2d.velocity.y);
-
             //The player gains speed over time instead of input, gonna try to figure out how to fix this.
             //Honestly don't remember what I was going for when I made the comment above but I assume this is a leftover from my sonic project.
 
@@ -129,7 +128,7 @@ public class PlayerController : MonoBehaviour
         {
             isSonic = !isSonic;
             //Fixed the sprite order issue by changing the if statements' parantheses.
-            if (isSonic && canSwitch)
+            if (isSonic)
             {
                 StartCoroutine(Indicator());
                 player1.GetComponent<SpriteRenderer>().sortingOrder = 2;
@@ -190,7 +189,8 @@ public class PlayerController : MonoBehaviour
         {
             // Activates the indicator and then deactives it after X seconds.
             player1.transform.GetChild(0).gameObject.SetActive(true);
-            if(player2.transform.GetChild(0).gameObject.activeSelf)
+            player1.GetComponentInChildren<ParticleSystem>().Play();
+            if (player2.transform.GetChild(0).gameObject.activeSelf)
             {
                 player2.transform.GetChild(0).gameObject.SetActive(false);
             }
@@ -203,6 +203,7 @@ public class PlayerController : MonoBehaviour
         {
             // Activates the indicator and then deactives it after X seconds.
             player2.transform.GetChild(0).gameObject.SetActive(true);
+            player2.GetComponentInChildren<ParticleSystem>().Play();
             if (player1.transform.GetChild(0).gameObject.activeSelf)
             {
                 player1.transform.GetChild(0).gameObject.SetActive(false);

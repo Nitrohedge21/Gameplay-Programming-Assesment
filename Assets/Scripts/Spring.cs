@@ -61,7 +61,7 @@ public class Spring : MonoBehaviour
                 Physics2D.IgnoreLayerCollision(9, 6, false);
                 other.gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 other.gameObject.GetComponent<Rigidbody2D>().transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-                player1.GetComponent<PlayerController>().jumpableGround = 1 << 6;
+                player2.GetComponent<PlayerController>().jumpableGround = 1 << 6;
             }
 
         }
